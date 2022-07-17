@@ -4,6 +4,7 @@ import com.ead.authuser.validation.UsernameConstraint;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
+import lombok.ToString;
 import org.hibernate.validator.constraints.br.CPF;
 
 import javax.validation.constraints.Email;
@@ -25,11 +26,13 @@ public class UserDto {
     @NotBlank(groups = UserView.RegistrationPost.class)
     private String email;
 
+    @ToString.Exclude
     @JsonView({UserView.RegistrationPost.class, UserView.PasswordPut.class})
     @NotBlank(groups = {UserView.RegistrationPost.class, UserView.PasswordPut.class})
     @Size(min = 6, max = 20, groups = {UserView.RegistrationPost.class, UserView.PasswordPut.class})
     private String password;
 
+    @ToString.Exclude
     @JsonView(UserView.PasswordPut.class)
     @NotBlank(groups = UserView.PasswordPut.class)
     @Size(min = 6, max = 20, groups = UserView.PasswordPut.class)

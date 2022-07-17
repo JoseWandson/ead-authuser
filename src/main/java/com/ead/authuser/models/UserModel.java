@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.hateoas.RepresentationModel;
@@ -45,6 +46,7 @@ public class UserModel extends RepresentationModel<UserModel> implements Seriali
     private String email;
 
     @JsonIgnore
+    @ToString.Exclude
     @Column(nullable = false)
     private String password;
 
