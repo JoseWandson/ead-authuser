@@ -12,4 +12,5 @@ public class UserFilter {
     private UserType userType;
     private String email;
     private UserStatus userStatus;
+    private String fullName;
 }
