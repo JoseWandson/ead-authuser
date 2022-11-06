@@ -1,11 +1,9 @@
 package com.ead.authuser.configs;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 
 import java.time.format.DateTimeFormatter;
 
@@ -17,10 +15,9 @@ public class DateConfig {
             new LocalDateTimeSerializer(DateTimeFormatter.ofPattern(DATETIME_FORMAT));
 
     @Bean
-    @Primary
-    public ObjectMapper objectMapper() {
+    public JavaTimeModule javaTimeModule() {
         JavaTimeModule module = new JavaTimeModule();
         module.addSerializer(LOCAL_DATETIME_SERIALIZER);
-        return new ObjectMapper().registerModule(module);
+        return module;
     }
 }
