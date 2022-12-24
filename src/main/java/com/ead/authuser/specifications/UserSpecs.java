@@ -3,13 +3,13 @@ package com.ead.authuser.specifications;
 import com.ead.authuser.filters.UserFilter;
 import com.ead.authuser.models.UserCourseModel;
 import com.ead.authuser.models.UserModel;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.UUID;
