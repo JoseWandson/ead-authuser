@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +26,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/users/{userId}/courses")
+@RequestMapping("/users/")
 public class UserCourseController {
 
     @Autowired
@@ -37,12 +38,12 @@ public class UserCourseController {
     @Autowired
     private UserCourseService userCourseService;
 
-    @GetMapping
+    @GetMapping("{userId}/courses")
     public ResponseEntity<Page<CourseDto>> getAllCoursesByUser(@PageableDefault(sort = "courseId") Pageable pageable, @PathVariable UUID userId) {
         return ResponseEntity.ok(courseClient.getAllCoursesByUser(userId, pageable));
     }
 
-    @PostMapping("/subscription")
+    @PostMapping("{userId}/courses/subscription")
     public ResponseEntity<Object> saveSubscriptionUserInCourse(@PathVariable UUID userId, @RequestBody @Valid UserCourseDto userCourseDto) {
         Optional<UserModel> userModelOptional = userService.findById(userId);
 
@@ -57,5 +58,16 @@ public class UserCourseController {
         UserCourseModel userCourseModel = userCourseService.save(userModelOptional.get().convertToUserCourseModel(userCourseDto.getCourseId()));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(userCourseModel);
+    }
+
+    @DeleteMapping("courses/{courseId}")
+    public ResponseEntity<Object> deleteUserCourseByCourse(@PathVariable UUID courseId) {
+        if (!userCourseService.existsByCourseId(courseId)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("UserCourse not found.");
+        }
+
+        userCourseService.deleteUserCourseByCourse(courseId);
+
+        return ResponseEntity.ok("UserCourse deleted successfully.");
     }
 }
