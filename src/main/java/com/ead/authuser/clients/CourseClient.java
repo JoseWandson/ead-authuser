@@ -57,4 +57,8 @@ public class CourseClient {
         return body;
     }
 
+    public void deleteUserInCourse(UUID userId) {
+        var url = requestUrlCourse + "/courses/users/" + userId;
+        restTemplate.delete(url);
+    }
 }

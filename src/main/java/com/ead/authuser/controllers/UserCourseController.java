@@ -1,7 +1,6 @@
 package com.ead.authuser.controllers;
 
 import com.ead.authuser.clients.CourseClient;
-import com.ead.authuser.dtos.CourseDto;
 import com.ead.authuser.dtos.UserCourseDto;
 import com.ead.authuser.models.UserCourseModel;
 import com.ead.authuser.models.UserModel;
@@ -9,7 +8,6 @@ import com.ead.authuser.services.UserCourseService;
 import com.ead.authuser.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -39,7 +37,12 @@ public class UserCourseController {
     private UserCourseService userCourseService;
 
     @GetMapping("{userId}/courses")
-    public ResponseEntity<Page<CourseDto>> getAllCoursesByUser(@PageableDefault(sort = "courseId") Pageable pageable, @PathVariable UUID userId) {
+    public ResponseEntity<Object> getAllCoursesByUser(@PageableDefault(sort = "courseId") Pageable pageable, @PathVariable UUID userId) {
+        Optional<UserModel> userModelOptional = userService.findById(userId);
+        if (userModelOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+        }
+
         return ResponseEntity.ok(courseClient.getAllCoursesByUser(userId, pageable));
     }
 
@@ -61,7 +64,7 @@ public class UserCourseController {
     }
 
     @DeleteMapping("courses/{courseId}")
-    public ResponseEntity<Object> deleteUserCourseByCourse(@PathVariable UUID courseId) {
+    public ResponseEntity<String> deleteUserCourseByCourse(@PathVariable UUID courseId) {
         if (!userCourseService.existsByCourseId(courseId)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("UserCourse not found.");
         }
