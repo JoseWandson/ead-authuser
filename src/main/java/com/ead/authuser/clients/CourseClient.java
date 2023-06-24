@@ -3,8 +3,8 @@ package com.ead.authuser.clients;
 import com.ead.authuser.dtos.CourseDto;
 import com.ead.authuser.dtos.ResponsePageDto;
 import com.ead.authuser.services.UtilsService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
@@ -22,13 +22,11 @@ import java.util.UUID;
 
 @Log4j2
 @Component
+@RequiredArgsConstructor
 public class CourseClient {
 
-    @Autowired
-    private RestTemplate restTemplate;
-
-    @Autowired
-    private UtilsService utilsService;
+    private final RestTemplate restTemplate;
+    private final UtilsService utilsService;
 
     @Value("${ead.api.url.course}")
     private String requestUrlCourse;
@@ -55,10 +53,5 @@ public class CourseClient {
         log.info("Ending request /courses userId {}", userId);
 
         return body;
-    }
-
-    public void deleteUserInCourse(UUID userId) {
-        var url = requestUrlCourse + "/courses/users/" + userId;
-        restTemplate.delete(url);
     }
 }
