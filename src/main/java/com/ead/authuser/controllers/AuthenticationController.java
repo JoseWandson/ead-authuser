@@ -39,7 +39,7 @@ public class AuthenticationController {
         var userModel = new UserModel();
         BeanUtils.copyProperties(userDto, userModel);
 
-        userService.save(userModel);
+        userService.saveUser(userModel);
 
         log.debug("POST registerUser userDto saved {}", userModel);
         log.info("User saved successfully userId {}", userModel.getUserId());
