@@ -31,7 +31,7 @@ public class InstructorController {
         var userModel = userModelOptional.get();
         userModel.setUserType(UserType.INSTRUCTOR);
 
-        userService.save(userModel);
+        userService.updateUser(userModel);
 
         return ResponseEntity.ok(userModel);
     }

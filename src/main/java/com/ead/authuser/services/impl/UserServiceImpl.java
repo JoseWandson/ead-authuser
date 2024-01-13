@@ -34,16 +34,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void delete(UserModel userModel) {
-        userRepository.delete(userModel);
-    }
-
-    @Override
-    public UserModel save(UserModel userModel) {
-        return userRepository.save(userModel);
-    }
-
-    @Override
     public boolean existsByUsername(String username) {
         return userRepository.existsByUsername(username);
     }
@@ -56,7 +46,26 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void saveUser(UserModel userModel) {
-        userModel = save(userModel);
+        userModel = userRepository.save(userModel);
         userEventPublisher.publishUserEvent(userModel.convertToUserEventDto(), ActionType.CREATE);
+    }
+
+    @Override
+    @Transactional
+    public void deleteUser(UserModel userModel) {
+        userRepository.delete(userModel);
+        userEventPublisher.publishUserEvent(userModel.convertToUserEventDto(), ActionType.DELETE);
+    }
+
+    @Override
+    @Transactional
+    public void updateUser(UserModel userModel) {
+        userModel = userRepository.save(userModel);
+        userEventPublisher.publishUserEvent(userModel.convertToUserEventDto(), ActionType.UPDATE);
+    }
+
+    @Override
+    public void updatePassword(UserModel userModel) {
+        userRepository.save(userModel);
     }
 }
