@@ -3,7 +3,7 @@ package com.ead.authuser.clients;
 import com.ead.authuser.dtos.CourseDto;
 import com.ead.authuser.dtos.ResponsePageDto;
 import com.ead.authuser.services.UtilsService;
-import io.github.resilience4j.retry.annotation.Retry;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,7 +33,7 @@ public class CourseClient {
     @Value("${ead.api.url.course}")
     private String requestUrlCourse;
 
-    @Retry(name = "retryInstance", fallbackMethod = "retryfallback")
+    @CircuitBreaker(name = "circuitbreakerInstance", fallbackMethod = "circuitbreakerfallback")
     public Page<CourseDto> getAllCoursesByUser(UUID userId, Pageable pageable) {
         ResponsePageDto<CourseDto> body = null;
         String url = requestUrlCourse + utilsService.createUrlGetAllCoursesByUser(userId, pageable);
@@ -59,8 +59,8 @@ public class CourseClient {
     }
 
     @SuppressWarnings("unused")
-    private Page<CourseDto> retryfallback(UUID userId, Pageable pageable, Throwable t) {
-        log.error("Inside retry retryfallback, cause - {}", t.toString());
+    private Page<CourseDto> circuitbreakerfallback(UUID userId, Pageable pageable, Throwable t) {
+        log.error("Inside circuit breaker fallback, cause - {}", t.toString());
         return new PageImpl<>(new ArrayList<>());
     }
 }
