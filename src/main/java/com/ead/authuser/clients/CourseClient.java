@@ -9,7 +9,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +32,7 @@ public class CourseClient {
     @Value("${ead.api.url.course}")
     private String requestUrlCourse;
 
-    @CircuitBreaker(name = "circuitbreakerInstance", fallbackMethod = "circuitbreakerfallback")
+    @CircuitBreaker(name = "circuitbreakerInstance")
     public Page<CourseDto> getAllCoursesByUser(UUID userId, Pageable pageable) {
         ResponsePageDto<CourseDto> body = null;
         String url = requestUrlCourse + utilsService.createUrlGetAllCoursesByUser(userId, pageable);
@@ -58,9 +57,4 @@ public class CourseClient {
         return body;
     }
 
-    @SuppressWarnings("unused")
-    private Page<CourseDto> circuitbreakerfallback(UUID userId, Pageable pageable, Throwable t) {
-        log.error("Inside circuit breaker fallback, cause - {}", t.toString());
-        return new PageImpl<>(new ArrayList<>());
-    }
 }
