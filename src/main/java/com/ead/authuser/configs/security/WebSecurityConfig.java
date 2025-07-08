@@ -25,8 +25,7 @@ public class WebSecurityConfig {
 //    private final AuthenticationEntryPoint authenticationEntryPoint;
 
     private static final String[] AUTH_WHITELIST = {
-//            "/auth/**"
-            "/ead-authuser/auth/*"
+            "/auth/**"
     };
 
     @Bean
