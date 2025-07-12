@@ -17,8 +17,8 @@ public class RestTemplateConfig {
     @LoadBalanced
     public RestTemplate restTemplate(RestTemplateBuilder builder) {
         return builder
-                .setConnectTimeout(Duration.ofMillis(TIMEOUT))
-                .setReadTimeout(Duration.ofMillis(TIMEOUT))
+                .connectTimeout(Duration.ofMillis(TIMEOUT))
+                .readTimeout(Duration.ofMillis(TIMEOUT))
                 .build();
     }
 }
