@@ -76,7 +76,7 @@ public class AuthenticationController {
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtProvider.genereteJwt(authentication);
+        String jwt = jwtProvider.generateJwt(authentication);
 
         return ResponseEntity.ok(new JwtDto(jwt));
     }
