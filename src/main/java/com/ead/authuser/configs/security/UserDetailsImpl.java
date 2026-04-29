@@ -4,12 +4,14 @@ import com.ead.authuser.models.UserModel;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -28,7 +30,7 @@ public class UserDetailsImpl implements UserDetails {
 
     public static UserDetailsImpl build(UserModel userModel) {
         List<GrantedAuthority> authorities = userModel.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getAuthority()))
+                .map(role -> new SimpleGrantedAuthority(Objects.requireNonNull(role.getAuthority())))
                 .collect(Collectors.toList());
 
         return new UserDetailsImpl(
@@ -41,7 +43,7 @@ public class UserDetailsImpl implements UserDetails {
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
+    public @NonNull Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
     }
 
@@ -51,7 +53,7 @@ public class UserDetailsImpl implements UserDetails {
     }
 
     @Override
-    public String getUsername() {
+    public @NonNull String getUsername() {
         return username;
     }
 

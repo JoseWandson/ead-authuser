@@ -1,9 +1,11 @@
 package com.ead.authuser.controllers;
 
+import com.ead.authuser.configs.security.AuthenticationCurrentUserService;
+import com.ead.authuser.configs.security.UserDetailsImpl;
 import com.ead.authuser.dtos.UserDto;
 import com.ead.authuser.models.UserModel;
 import com.ead.authuser.services.UserService;
-import com.ead.authuser.specifications.SpecificationTemplate;
+import com.ead.authuser.specifications.SpecificationTemplate.UserSpec;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -12,6 +14,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -37,9 +44,16 @@ public class UserController {
 
     private final UserService userService;
 
+    private final AuthenticationCurrentUserService authenticationCurrentUserService;
+
     @GetMapping
-    public ResponseEntity<Page<UserModel>> getAllUsers(SpecificationTemplate.UserSpec spec,
-                                                       @PageableDefault(sort = "userId") Pageable pageable) {
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public ResponseEntity<Page<UserModel>> getAllUsers(UserSpec spec,
+                                                       @PageableDefault(sort = "userId") Pageable pageable,
+                                                       Authentication authentication) {
+        UserDetails userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        log.info("Authentication {} ", Objects.requireNonNull(userDetails).getUsername());
+
         Page<UserModel> userModelPage = userService.findAll(spec, pageable);
 
         userModelPage.forEach(user ->
@@ -49,11 +63,16 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
+    @PreAuthorize("hasAnyRole('STUDENT')")
     public ResponseEntity<Object> getOneUser(@PathVariable UUID userId) {
-        Optional<UserModel> userModelOptional = userService.findById(userId);
+        UUID currentUserId = authenticationCurrentUserService.getCurrentUser().getUserId();
+        if (currentUserId.equals(userId)) {
+            Optional<UserModel> userModelOptional = userService.findById(userId);
 
-        return userModelOptional.<ResponseEntity<Object>>map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(USER_NOT_FOUND));
+            return userModelOptional.<ResponseEntity<Object>>map(ResponseEntity::ok)
+                    .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(USER_NOT_FOUND));
+        }
+        throw new AccessDeniedException("Forbidden");
     }
 
     @DeleteMapping("/{userId}")
